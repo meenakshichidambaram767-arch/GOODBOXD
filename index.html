@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home - Goodboxd</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #111; /* Lighter than pure black */
+            color: white;
+        }
+        
+        /* Navigation */
+        nav {
+            background: crimson;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #ffcccc;
+        }
+        
+        /* Hero Section - LIGHTER */
+        .hero-section {
+            background-image: url('Here\ is\ a\ 1920\ x\ 1080\ wallpaper\ I\ made\ of\ all\ my\ favorite\ movie\ posters_\ Hope\ you\ enjoy!\ \(OC\).jpg');
+            height: 60vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        /* Lighter overlay */
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5); /* Reduced from 0.7 to 0.5 */
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* Main Title */
+        h1 {
+            font-size: 70px;
+            color: #fff;
+            font-weight: 700;
+            position: relative;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow:
+                0 0 10px #ff005c,
+                0 0 20px #ff005c,
+                0 0 30px #ff005c,
+                0 0 40px #ff005c;
+            animation: glitch 1.5s infinite alternate-reverse;
+            margin: 0;
+        }
+        
+        /* Glitch effect */
+        @keyframes glitch {
+            0% {
+                text-shadow:
+                    2px 2px #00fff2,
+                    -2px -2px #ff005c;
+                transform: translate(0, 0);
+            }
+            20% {
+                text-shadow:
+                    -2px 2px #00fff2,
+                    2px -2px #ff005c;
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                text-shadow:
+                    2px -2px #00fff2,
+                    -2px 2px #ff005c;
+                transform: translate(2px, -2px);
+            }
+            60% {
+                text-shadow:
+                    -3px -3px #00fff2,
+                    3px 3px #ff005c;
+                transform: translate(-3px, -3px);
+            }
+            80% {
+                text-shadow:
+                    3px 3px #00fff2,
+                    -3px -3px #ff005c;
+                transform: translate(3px, 3px);
+            }
+            100% {
+                text-shadow:
+                    0 0 20px #ff005c,
+                    0 0 40px #00fff2;
+                transform: translate(0, 0);
+            }
+        }
+        
+        /* Tagline */
+        .tagline {
+            font-size: 20px;
+            color: aliceblue;
+            text-align: center;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        
+        /* Search Container */
+        .search-container {
+            margin: 40px auto;
+            max-width: 800px;
+            padding: 0 20px;
+            position: relative;
+        }
+        
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            padding-left: 50px;
+            font-size: 16px;
+            border: 2px solid crimson;
+            border-radius: 30px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #ff005c;
+            box-shadow: 0 6px 20px rgba(255, 0, 92, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: crimson;
+            font-size: 20px;
+        }
+        
+        .search-btn {
+            padding: 15px 30px;
+            background: crimson;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .search-btn:hover {
+            background: #ff005c;
+            transform: scale(1.05);
+        }
+        
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(40, 40, 40, 0.95);
+            border: 2px solid crimson;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .suggestion-item {
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .suggestion-item:hover {
+            background: rgba(220, 20, 60, 0.3);
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .type-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .movie-icon {
+            color: #00fff2;
+        }
+        
+        .book-icon {
+            color: #ffcc00;
+        }
+        
+        /* Categories Section */
+        .categories {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+        .categories h2 {
+            font-size: 36px;
+            margin-bottom: 40px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .category-card {
+            background: linear-gradient(145deg, rgba(50, 50, 50, 0.9), rgba(70, 70, 70, 0.8)); /* Lighter gradient */
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px);
+            border-color: crimson;
+            box-shadow: 0 15px 30px rgba(255, 0, 92, 0.2);
+        }
+        
+        /* Both cards have the same crimson color */
+        .category-card.movies {
+            background: linear-gradient(145deg, rgba(220, 20, 60, 0.9), rgba(255, 0, 92, 0.7));
+        }
+        
+        .category-card.books {
+            background: linear-gradient(145deg, rgba(220, 20, 60, 0.9), rgba(255, 0, 92, 0.7));
+        }
+        
+        .category-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .category-desc {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: crimson;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 60px;
+            font-size: 18px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 40px;
+            }
+            
+            .tagline {
+                font-size: 16px;
+                padding: 0 20px;
+            }
+            
+            .search-wrapper {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                width: 100%;
+            }
+            
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            <a href="home.html">Home</a>
+            <a href="movies.html">Movies</a>
+            <a href="books.html">Books</a>
+        </div>
+    </nav>
+    
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Welcome to Goodboxd</h1>
+        </div>
+    </div>
+    
+    <div class="tagline">
+        <p>From Classic Novels to Modern Blockbusters.</p>
+        <p>Discover reviews that spotlight the stories you don't want to miss!</p>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" 
+                   id="searchInput" 
+                   class="search-input" 
+                   placeholder="Search for movies or books..."
+                   autocomplete="off">
+            <button id="searchButton" class="search-btn">Search</button>
+            <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+    </div>
+    
+    <!-- Categories Section -->
+    <div class="categories">
+        <h2>Explore Categories</h2>
+        <div class="category-grid">
+            <a href="movies.html" class="category-card movies">
+                <div class="category-icon">🎬</div>
+                <h3 class="category-title">Movies</h3>
+                <p class="category-desc">Explore a curated list of movies across different genres and languages.Each movie card includes a quick review, rating, and personal thoughts.From action-packed adventures to emotional dramas, GoodBoxd celebrates all kinds of cinema.</p>
+            </a>
+            
+            <a href="books.html" class="category-card books">
+                <div class="category-icon">📚</div>
+                <h3 class="category-title">Books</h3>
+                <p class="category-desc">Discover a curated collection of books from different genres and authors.Each book card includes a brief review, rating, and personal opinion.Whether it’s fiction, non-fiction, fantasy, or self-help, every book has something unique to offer.</p>
+            </a>
+        </div>
+    </div>
+    
+    <footer>© 2025 Goodboxd</footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            
+            // Sample data for suggestions (this would come from your actual database in a real app)
+            const allItems = [
+                // Movies from movies.html
+                { type: 'movie', title: 'Superman', id: 'superman', page: 'movies.html' },
+                { type: 'movie', title: 'Anbe Sivam', id: 'anbesivam', page: 'movies.html' },
+                { type: 'movie', title: 'Cars 3', id: 'cars3', page: 'movies.html' },
+                { type: 'movie', title: 'La La Land', id: 'lalaland', page: 'movies.html' },
+                { type: 'movie', title: 'The Batman', id: 'thebatman', page: 'movies.html' },
+                { type: 'movie', title: 'Avengers: Infinity War', id: 'avengersinfinity', page: 'movies.html' },
+                { type: 'movie', title: 'Knives Out', id: 'knivesout', page: 'movies.html' },
+                { type: 'movie', title: 'Frankenstein', id: 'frankenstein', page: 'movies.html' },
+                { type: 'movie', title: 'Lokah', id: 'lokah', page: 'movies.html' },
+                { type: 'movie', title: 'The Secret Life of Walter Mitty', id: 'waltermitty', page: 'movies.html' },
+                { type: 'movie', title: 'Harry Potter and the Prisoner of Azkaban', id: 'harrypotter3', page: 'movies.html' },
+                
+                // Books from books.html
+                { type: 'book', title: 'A Thousand Splendid Suns', id: 'suns', page: 'books.html' },
+                { type: 'book', title: 'Harry Potter and the Goblet of Fire', id: 'hp', page: 'books.html' },
+                { type: 'book', title: 'Murder on the Orient Express', id: 'orient', page: 'books.html' },
+                { type: 'book', title: 'Metamorphosis', id: 'kafka', page: 'books.html' },
+                { type: 'book', title: 'Pride and Prejudice', id: 'pride', page: 'books.html' },
+                { type: 'book', title: 'Norwegian Wood', id: 'norwegian', page: 'books.html' },
+                { type: 'book', title: 'More Days at the Morisaki Bookshop', id: 'morisaki', page: 'books.html' },
+                { type: 'book', title: 'The Fault in Our Stars', id: 'fault', page: 'books.html' }
+            ];
+            
+            // Initialize search
+            initializeSearch();
+            
+            function initializeSearch() {
+                // Real-time search suggestions
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase().trim();
+                    updateSuggestions(searchTerm);
+                });
+                
+                // Search button click
+                searchButton.addEventListener('click', function() {
+                    performSearch();
+                });
+                
+                // Enter key support
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+                
+                // Focus/blur for suggestions
+                searchInput.addEventListener('focus', function() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    if (searchTerm) {
+                        updateSuggestions(searchTerm);
+                    }
+                });
+                
+                searchInput.addEventListener('blur', function() {
+                    setTimeout(() => hideSuggestions(), 200);
+                });
+            }
+            
+            function updateSuggestions(searchTerm) {
+                if (!searchTerm) {
+                    hideSuggestions();
+                    return;
+                }
+                
+                const suggestions = allItems.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm)
+                );
+                
+                if (suggestions.length > 0) {
+                    showSuggestions(suggestions);
+                } else {
+                    hideSuggestions();
+                }
+            }
+            
+            function showSuggestions(suggestions) {
+                searchSuggestions.innerHTML = '';
+                suggestions.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `
+                        <span class="type-icon ${item.type === 'movie' ? 'movie-icon' : 'book-icon'}">
+                            ${item.type === 'movie' ? '🎬' : '📚'}
+                        </span>
+                        <div>
+                            <strong>${item.title}</strong><br>
+                            <small>${item.type === 'movie' ? 'Movie' : 'Book'}</small>
+                        </div>
+                    `;
+                    
+                    div.addEventListener('click', function() {
+                        // Store item info for redirection
+                        localStorage.setItem('scrollTo', item.id);
+                        if (item.type === 'book') {
+                            localStorage.setItem('scrollToBook', item.id);
+                        }
+                        
+                        // Redirect to the appropriate page
+                        window.location.href = item.page;
+                    });
+                    
+                    searchSuggestions.appendChild(div);
+                });
+                
+                searchSuggestions.style.display = 'block';
+            }
+            
+            function hideSuggestions() {
+                searchSuggestions.style.display = 'none';
+            }
+            
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                if (!searchTerm) return;
+                
+                // Find matching items
+                const matches = allItems.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm)
+                );
+                
+                if (matches.length > 0) {
+                    // Get the first match
+                    const firstMatch = matches[0];
+                    
+                    // Store item info for redirection
+                    localStorage.setItem('scrollTo', firstMatch.id);
+                    if (firstMatch.type === 'book') {
+                        localStorage.setItem('scrollToBook', firstMatch.id);
+                    }
+                    
+                    // Show loading message
+                    alert(`Redirecting to ${firstMatch.title}...`);
+                    
+                    // Redirect to the appropriate page
+                    window.location.href = firstMatch.page;
+                } else {
+                    alert('No results found. Try a different search term.');
+                }
+                
+                hideSuggestions();
+            }
+            
+            // Add click event to category cards for smooth transitions
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    
+                    // Add transition effect
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 200);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

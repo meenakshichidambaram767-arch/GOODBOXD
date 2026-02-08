@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GoodBoxd - Book Reviews</title>
+    <style>
+        :root {
+            --primary-color: crimson;
+            --primary-light: #ff6b8b;
+            --dark-bg: #121212;
+            --dark-card: #1e1e1e;
+            --light-bg: #f5f5f5;
+            --light-card: white;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: var(--light-bg);
+            transition: all 0.5s ease;
+            padding-bottom: 0;
+        }
+        
+        body.dark-mode {
+            background: var(--dark-bg);
+            color: #f5f5f5;
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(30deg) scale(1.1);
+        }
+        
+        /* NAVBAR */
+        nav {
+            background: var(--primary-color);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: opacity 0.3s;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* Header */
+        .page-header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .page-header p {
+            margin: 15px 0 0;
+            font-size: 1.2em;
+            color: #666;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+        
+        body.dark-mode .page-header p {
+            color: #b0b0b0;
+        }
+        
+        body.dark-mode .page-header h1 {
+            color: var(--primary-light);
+        }
+        
+        /* Search Container */
+        .search-container {
+            margin: 20px auto 30px;
+            max-width: 800px;
+            padding: 0 20px;
+            position: relative;
+        }
+        
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            padding-left: 50px;
+            font-size: 16px;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            outline: none;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode .search-input {
+            background: #2d2d2d;
+            color: white;
+            border-color: var(--primary-light);
+        }
+        
+        .search-input:focus {
+            border-color: #ff005c;
+            box-shadow: 0 6px 20px rgba(255, 0, 92, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+        
+        .search-btn {
+            padding: 14px 30px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .search-btn:hover {
+            background: #ff005c;
+            transform: scale(1.05);
+        }
+        
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        body.dark-mode .search-suggestions {
+            background: #2d2d2d;
+            color: white;
+        }
+        
+        .suggestion-item {
+            padding: 12px 20px;
+            color: #333;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        body.dark-mode .suggestion-item {
+            color: #f5f5f5;
+            border-bottom-color: #444;
+        }
+        
+        .suggestion-item:hover {
+            background: #ffe6e6;
+        }
+        
+        body.dark-mode .suggestion-item:hover {
+            background: #3d3d3d;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .book-icon {
+            margin-right: 10px;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+        
+        /* Filter Panel */
+        .filter-panel {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: 25px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+        
+        body.dark-mode .filter-select {
+            background: #2d2d2d;
+            color: white;
+            border-color: var(--primary-light);
+        }
+        
+        .filter-select:hover {
+            border-color: #ff005c;
+            transform: translateY(-2px);
+        }
+        
+        /* Stats Panel */
+        .stats-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 800px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        body.dark-mode .stats-panel {
+            background: var(--dark-card);
+        }
+        
+        .stats-panel h3 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(220, 20, 60, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(220, 20, 60, 0.2);
+        }
+        
+        .stat-card h4 {
+            margin: 0 0 10px 0;
+            color: #666;
+        }
+        
+        body.dark-mode .stat-card h4 {
+            color: #b0b0b0;
+        }
+        
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        /* CONTAINER */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 30px auto;
+            padding: 0 20px 40px;
+            max-width: 1200px;
+            min-height: calc(100vh - 400px);
+        }
+        
+        /* CARD */
+        .card {
+            background: var(--light-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body.dark-mode .card {
+            background: var(--dark-card);
+            color: #f5f5f5;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(220, 20, 60, 0.2);
+            border-color: var(--primary-color);
+        }
+        
+        body.dark-mode .card:hover {
+            border-color: var(--primary-light);
+        }
+        
+        .card.highlight {
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
+            animation: highlightPulse 1.5s ease;
+            transform: scale(1.02);
+        }
+        
+        @keyframes highlightPulse {
+            0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(220, 20, 60, 0.5); }
+            100% { transform: scale(1.02); box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3); }
+        }
+        
+        .card.hidden {
+            display: none;
+        }
+        
+        .card-image {
+            position: relative;
+            overflow: hidden;
+            height: 320px;
+            background: linear-gradient(45deg, #f5f5f5 25%, #e0e0e0 50%, #f5f5f5 75%);
+            background-size: 200% 200%;
+            animation: loading 1.5s infinite;
+        }
+        
+        body.dark-mode .card-image {
+            background: linear-gradient(45deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .book-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+        }
+        
+        .card-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        body.dark-mode .card h3 {
+            color: #f5f5f5;
+        }
+        
+        .card h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #666;
+            font-weight: normal;
+            min-height: 40px;
+        }
+        
+        body.dark-mode .card h4 {
+            color: #b0b0b0;
+        }
+        
+        .card p {
+            margin: 5px 0;
+            color: #333;
+        }
+        
+        body.dark-mode .card p {
+            color: #b0b0b0;
+        }
+        
+        /* OVERLAY */
+        .overlay {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            transition: 0.5s ease;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            box-sizing: border-box;
+        }
+        
+        .card:hover .overlay {
+            bottom: 0;
+        }
+        
+        /* BUTTONS */
+        .overlay .btn {
+            display: block;
+            padding: 10px 15px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 90%;
+            max-width: 200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .overlay .btn:hover {
+            background: #ff005c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.4);
+        }
+        
+        .overlay .btn.read-later-btn {
+            background: linear-gradient(45deg, #2E3192, #1BFFFF);
+        }
+        
+        .overlay .btn.read-later-btn:hover {
+            background: linear-gradient(45deg, #1BFFFF, #2E3192);
+        }
+        
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-content {
+            background-size: cover;
+            background-position: center;
+            width: 70%;
+            max-width: 800px;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            color: white;
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+            animation: slideDown 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 0;
+        }
+        
+        .modal-content * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.3s;
+            z-index: 2;
+        }
+        
+        .close:hover {
+            transform: scale(1.2);
+            color: var(--primary-color);
+        }
+        
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            display: none;
+            grid-column: 1 / -1;
+            font-size: 18px;
+            background: white;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        body.dark-mode .no-results {
+            background: var(--dark-card);
+            color: #b0b0b0;
+        }
+        
+        .no-results h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        /* STAR RATING */
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 15px 0;
+        }
+        
+        .star {
+            font-size: 24px;
+            cursor: pointer;
+            color: lightgray;
+            transition: all 0.2s;
+        }
+        
+        .star:hover {
+            transform: scale(1.2);
+        }
+        
+        .star.selected {
+            color: gold;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        
+        .wishlist-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .wishlist-btn.added {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .wishlist-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+        }
+        
+        /* Read Later Button */
+        .read-later-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid #2E3192;
+            background: linear-gradient(45deg, #2E3192, #1BFFFF);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .read-later-btn.added {
+            background: linear-gradient(45deg, #FF416C, #FF4B2B);
+            border-color: #FF416C;
+        }
+        
+        .read-later-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 49, 146, 0.4);
+        }
+        
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .audio-controls:hover {
+            transform: scale(1.05);
+        }
+        
+        #music-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        #music-toggle:hover {
+            background: #ff005c;
+            transform: rotate(15deg);
+        }
+        
+        #music-toggle.playing {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 20, 60, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 20, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 20, 60, 0); }
+        }
+        
+        .volume-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .volume-icon {
+            font-size: 16px;
+            color: white;
+        }
+        
+        #volume-slider {
+            width: 80px;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #volume-slider::-webkit-slider-thumb:hover {
+            background: #ff005c;
+            transform: scale(1.2);
+        }
+        
+        /* Music Selection Modal */
+        .music-selection-modal {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            width: 250px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .music-selection-modal h4 {
+            color: white;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .music-option {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .music-option:hover {
+            background: rgba(220, 20, 60, 0.3);
+        }
+        
+        .music-option.active {
+            background: var(--primary-color);
+        }
+        
+        /* FOOTER */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            font-size: 18px;
+            position: relative;
+            margin-top: 40px;
+            z-index: 10;
+        }
+        
+        body.dark-mode footer {
+            background: #1a1a1a;
+            border-top: 2px solid var(--primary-color);
+        }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; } 
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Card animations */
+        .card {
+            animation: slideIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes slideIn {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Animation delays */
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        .card:nth-child(7) { animation-delay: 0.7s; }
+        .card:nth-child(8) { animation-delay: 0.8s; }
+        
+        /* Sound wave animation */
+        .sound-wave {
+            display: none;
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            right: 55px;
+        }
+        
+        .sound-wave.active {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .sound-wave.active .bar {
+            display: inline-block;
+            width: 3px;
+            height: 10px;
+            background: var(--primary-color);
+            animation: soundWave 1s infinite ease-in-out;
+            border-radius: 3px;
+        }
+        
+        .sound-wave.active .bar:nth-child(1) { animation-delay: 0s; }
+        .sound-wave.active .bar:nth-child(2) { animation-delay: 0.1s; }
+        .sound-wave.active .bar:nth-child(3) { animation-delay: 0.2s; }
+        .sound-wave.active .bar:nth-child(4) { animation-delay: 0.3s; }
+        .sound-wave.active .bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes soundWave {
+            0%, 100% { height: 10px; }
+            50% { height: 20px; }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 10000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+                padding: 0 15px 30px;
+            }
+            
+            .card-image {
+                height: 280px;
+            }
+            
+            .modal-content {
+                width: 90%;
+                margin: 10% auto;
+                padding: 20px;
+            }
+            
+            .filter-panel {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-select {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .audio-controls {
+                bottom: 10px;
+                right: 10px;
+                padding: 8px 12px;
+            }
+            
+            .sound-wave {
+                display: none !important;
+            }
+            
+            .page-header h1 {
+                font-size: 2.2em;
+            }
+            
+            .page-header p {
+                font-size: 1em;
+                padding: 0 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .card h3 {
+                font-size: 16px;
+                min-height: 40px;
+            }
+            
+            .page-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .page-header p {
+                font-size: 0.9em;
+            }
+            
+            .overlay {
+                padding: 15px;
+                height: 45%;
+            }
+            
+            .overlay .btn {
+                padding: 8px 12px;
+                font-size: 13px;
+                width: 85%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">🌙</button>
+
+<nav>
+    <div>
+        <a href="home.html">🏠 Home</a>
+        <a href="movies.html">🎬 Movies</a>
+        <a href="books.html" style="background: rgba(255,255,255,0.2);">📚 Books</a>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1>📚 Discover Your Next Favorite Book!</h1>
+    <p>Explore, rate, and review amazing books from around the world. Find your next literary adventure!</p>
+</div>
+
+<!-- Search Bar -->
+<div class="search-container">
+    <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" 
+               id="searchInput" 
+               class="search-input" 
+               placeholder="Search books by title, author, genre, or rating..."
+               autocomplete="off">
+        <button id="searchButton" class="search-btn">Search</button>
+        <div class="search-suggestions" id="searchSuggestions"></div>
+    </div>
+</div>
+
+<!-- Filter Panel -->
+<div class="filter-panel">
+    <select id="genreFilter" class="filter-select">
+        <option value="">📖 All Genres</option>
+        <option value="Fiction">Fiction</option>
+        <option value="Drama">Drama</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Mystery">Mystery</option>
+        <option value="Classic">Classic</option>
+        <option value="Romance">Romance</option>
+        <option value="Adventure">Adventure</option>
+        <option value="Literary">Literary Fiction</option>
+        <option value="Contemporary">Contemporary</option>
+        <option value="Young Adult">Young Adult</option>
+    </select>
+    
+    <select id="ratingFilter" class="filter-select">
+        <option value="">⭐ Any Rating</option>
+        <option value="5">★★★★★</option>
+        <option value="4">★★★★ & above</option>
+        <option value="3">★★★ & above</option>
+        <option value="2">★★ & above</option>
+    </select>
+    
+    <select id="yearFilter" class="filter-select">
+        <option value="">📅 All Years</option>
+        <option value="2020-2025">2020-2025</option>
+        <option value="2010-2019">2010-2019</option>
+        <option value="2000-2009">2000-2009</option>
+        <option value="1990-1999">1990-1999</option>
+        <option value="Before 1990">Before 1990</option>
+    </select>
+    
+    <button id="showStats" class="search-btn" style="padding: 10px 20px;">📊 My Reading Stats</button>
+</div>
+
+<!-- Stats Panel -->
+<div class="stats-panel" id="statsPanel">
+    <h3>📊 Your Reading Statistics</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h4>📚 Books Read</h4>
+            <p id="booksRead">0</p>
+        </div>
+        <div class="stat-card">
+            <h4>⭐ Average Rating</h4>
+            <p id="avgRating">0.0</p>
+        </div>
+        <div class="stat-card">
+            <h4>❤️ Wishlist</h4>
+            <p id="wishlistCount">0</p>
+        </div>
+        <div class="stat-card">
+            <h4>📝 Reviews Written</h4>
+            <p id="reviewsCount">0</p>
+        </div>
+    </div>
+</div>
+
+<!-- Book Container -->
+<div class="container" id="bookContainer">
+
+    <!-- Book 1: A Thousand Splendid Suns -->
+    <div class="card" id="suns" data-title="A Thousand Splendid Suns" data-author="Khaled Hosseini" data-genre="Fiction Drama" data-rating="5" data-year="2007">
+        <div class="card-image">
+            <img src="A thousand splendid suns.jpg" alt="A Thousand Splendid Suns">
+            <div class="book-badge">🌟 Classic</div>
+        </div>
+        <div class="card-content">
+            <h3>A Thousand Splendid Suns</h3>
+            <h4>Author: Khaled Hosseini</h4>
+            <p>Rating: ⭐⭐⭐⭐⭐</p>
+            <p>Genre: Fiction, Drama</p>
+            <p>Year: 2007</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('suns')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('suns')">⏳ Read Later</button>
+        </div>
+    </div>
+
+    <!-- Book 2: Harry Potter -->
+    <div class="card" id="hp" data-title="Harry Potter and the Goblet of Fire" data-author="J K Rowling" data-genre="Fantasy Adventure" data-rating="4" data-year="2000">
+        <div class="card-image">
+            <img src="Harry Potter (Book Cover - Goblet of Fire) MightyPrint™ Wall Art MP17240255.jpg" alt="Harry Potter">
+            <div class="book-badge">⚡ Bestseller</div>
+        </div>
+        <div class="card-content">
+            <h3>Harry Potter and the Goblet of Fire</h3>
+            <h4>Author: J K Rowling</h4>
+            <p>Rating: ⭐⭐⭐⭐☆</p>
+            <p>Genre: Fantasy, Adventure</p>
+            <p>Year: 2000</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('hp')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('hp')">⏳ Read Later</button>
+        </div>
+    </div>
+
+    <!-- Book 3: Murder on the Orient Express -->
+    <div class="card" id="orient" data-title="Murder on the Orient Express" data-author="Agatha Christie" data-genre="Mystery Crime" data-rating="4" data-year="1934">
+        <div class="card-image">
+            <img src="Agatha Christie Murder on the Orient Express.jpg" alt="Murder on the Orient Express">
+            <div class="book-badge">🕵️ Classic Mystery</div>
+        </div>
+        <div class="card-content">
+            <h3>Murder on the Orient Express</h3>
+            <h4>Author: Agatha Christie</h4>
+            <p>Rating: ⭐⭐⭐⭐☆</p>
+            <p>Genre: Mystery, Crime</p>
+            <p>Year: 1934</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('orient')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('orient')">⏳ Read Later</button>
+        </div>
+    </div>
+
+    <!-- Book 4: Metamorphosis -->
+    <div class="card" id="kafka" data-title="Metamorphosis" data-author="Franz Kafka" data-genre="Classic Fiction" data-rating="4" data-year="1915">
+        <div class="card-image">
+            <img src="The Metamorphosis And Other Writings _ Franz Kafka _ Englisch _ Buch _ Gebunden.jpg" alt="Metamorphosis">
+            <div class="book-badge">📜 Literary Classic</div>
+        </div>
+        <div class="card-content">
+            <h3>Metamorphosis</h3>
+            <h4>Author: Franz Kafka</h4>
+            <p>Rating: ⭐⭐⭐⭐☆</p>
+            <p>Genre: Classic, Fiction</p>
+            <p>Year: 1915</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('kafka')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('kafka')">⏳ Read Later</button>
+        </div>
+    </div>
+
+    <!-- Book 5: Pride and Prejudice -->
+    <div class="card" id="pride" data-title="Pride and Prejudice" data-author="Jane Austen" data-genre="Classic Romance" data-rating="4" data-year="1813">
+        <div class="card-image">
+            <img src="pride and Prejudice by jane austen – Download for free instant acess.jpg" alt="Pride and Prejudice">
+            <div class="book-badge">💖 Romance Classic</div>
+        </div>
+        <div class="card-content">
+            <h3>Pride and Prejudice</h3>
+            <h4>Author: Jane Austen</h4>
+            <p>Rating: ⭐⭐⭐⭐☆</p>
+            <p>Genre: Classic, Romance</p>
+            <p>Year: 1813</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('pride')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('pride')">⏳ Read Later</button>
+        </div>
+    </div>
+
+    <!-- Book 6: Norwegian Wood -->
+    <div class="card" id="norwegian" data-title="Norwegian Wood" data-author="Haruki Murakami" data-genre="Literary Fiction" data-rating="4" data-year="1987">
+        <div class="card-image">
+            <img src="Norwegian Wood _ Haruki Murakami.jpg" alt="Norwegian Wood">
+            <div class="book-badge">🎵 Literary Fiction</div>
+        </div>
+        <div class="card-content">
+            <h3>Norwegian Wood</h3>
+            <h4>Author: Haruki Murakami</h4>
+            <p>Rating: ⭐⭐⭐⭐☆</p>
+            <p>Genre: Literary Fiction</p>
+            <p>Year: 1987</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('norwegian')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('norwegian')">⏳ Read Later</button>
+        </div>
+    </div>
+
+    <!-- Book 7: Morisaki Bookshop -->
+    <div class="card" id="morisaki" data-title="More Days at the Morisaki Bookshop" data-author="Satoshi Yagisawa" data-genre="Contemporary Fiction" data-rating="4" data-year="2022">
+        <div class="card-image">
+            <img src="More Days at the Morisaki Bookshop_ A Novel.jpg" alt="More Days at the Morisaki Bookshop">
+            <div class="book-badge">📚 Contemporary</div>
+        </div>
+        <div class="card-content">
+            <h3>More Days at the Morisaki Bookshop</h3>
+            <h4>Author: Satoshi Yagisawa</h4>
+            <p>Rating: ⭐⭐⭐⭐☆</p>
+            <p>Genre: Contemporary Fiction</p>
+            <p>Year: 2022</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('morisaki')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('morisaki')">⏳ Read Later</button>
+        </div>
+    </div>
+
+    <!-- Book 8: The Fault in Our Stars -->
+    <div class="card" id="fault" data-title="The Fault in Our Stars" data-author="John Green" data-genre="Young Adult Romance" data-rating="4" data-year="2012">
+        <div class="card-image">
+            <img src="The Fault in Our Stars.jpg" alt="The Fault in Our Stars">
+            <div class="book-badge">💫 Young Adult</div>
+        </div>
+        <div class="card-content">
+            <h3>The Fault in Our Stars</h3>
+            <h4>Author: John Green</h4>
+            <p>Rating: ⭐⭐⭐⭐☆</p>
+            <p>Genre: Young Adult, Romance</p>
+            <p>Year: 2012</p>
+        </div>
+        <div class="overlay">
+            <button class="btn" onclick="openReview('fault')">📖 Read Review</button>
+            <button class="btn read-later-btn" onclick="toggleReadLater('fault')">⏳ Read Later</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- No Results Message -->
+<div id="noResults" class="no-results">
+    <h3>📚 No books found</h3>
+    <p>Try searching with different keywords like book title, author name, or genre</p>
+</div>
+
+<!-- MODAL -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeReview()">✖</span>
+        <h2 id="reviewTitle"></h2>
+        <p id="reviewText"></p>
+
+        <div class="stars" id="starRating">
+            <span class="star" onclick="rateBook(1)">★</span>
+            <span class="star" onclick="rateBook(2)">★</span>
+            <span class="star" onclick="rateBook(3)">★</span>
+            <span class="star" onclick="rateBook(4)">★</span>
+            <span class="star" onclick="rateBook(5)">★</span>
+        </div>
+        
+        <!-- Added Read Later button in modal -->
+        <button class="read-later-btn" id="modalReadLaterBtn" onclick="toggleReadLater(currentBook)">⏳ Add to Read Later</button>
+        <button class="wishlist-btn" id="wishlistBtn" onclick="toggleWishlist()">❤️ Add to Wishlist</button>
+    </div>
+</div>
+
+<!-- Audio Controls -->
+<div class="audio-controls">
+    <button id="music-toggle" title="Toggle Background Music">🎵</button>
+    
+    <div class="sound-wave" id="soundWave">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+    
+    <div class="volume-slider-container">
+        <span class="volume-icon" id="volumeIcon">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.3" title="Volume">
+    </div>
+    
+    <button id="music-select-btn" title="Select Music Theme">🎼</button>
+</div>
+
+<!-- Music Selection Modal -->
+<div class="music-selection-modal" id="musicSelection">
+    <h4>🎵 Select Reading Theme</h4>
+    <button class="music-option" data-track="classical">
+        <span class="note-icon">🎻</span> Classical Reading
+    </button>
+    <button class="music-option" data-track="jazz">
+        <span class="note-icon">🎷</span> Coffee Shop Jazz
+    </button>
+    <button class="music-option" data-track="ambient">
+        <span class="note-icon">🌌</span> Ambient Focus
+    </button>
+    <button class="music-option" data-track="rain">
+        <span class="note-icon">🌧️</span> Rain & Thunder
+    </button>
+    <button class="music-option" data-track="lofi">
+        <span class="note-icon">☕</span> Lo-fi Study
+    </button>
+    <button class="music-option" data-track="piano">
+        <span class="note-icon">🎹</span> Piano Melodies
+    </button>
+</div>
+
+<footer>© 2025 GoodBoxd | 📚 Your Ultimate Book Discovery Platform</footer>
+
+<!-- Hidden Audio Elements -->
+<audio id="bg-music" loop></audio>
+<audio id="click-sound" preload="auto"></audio>
+<audio id="page-turn" preload="auto"></audio>
+<audio id="book-close" preload="auto"></audio>
+<audio id="success-sound" preload="auto"></audio>
+
+<script>
+// ==================== MULTIMEDIA MANAGER ====================
+class MultimediaManager {
+    constructor() {
+        this.bgMusic = document.getElementById('bg-music');
+        this.musicToggle = document.getElementById('music-toggle');
+        this.volumeSlider = document.getElementById('volume-slider');
+        this.volumeIcon = document.getElementById('volumeIcon');
+        this.soundWave = document.getElementById('soundWave');
+        this.musicSelection = document.getElementById('musicSelection');
+        this.musicSelectBtn = document.getElementById('music-select-btn');
+        
+        // Reading-appropriate music tracks
+        this.musicTracks = {
+            classical: 'https://cdn.pixabay.com/download/audio/2023/04/24/audio_6c1aa292a7.mp3?filename=classical-reading-ambient-15603.mp3',
+            jazz: 'https://cdn.pixabay.com/download/audio/2022/08/04/audio_f4f8a61a58.mp3?filename=smooth-jazz-15025.mp3',
+            ambient: 'https://cdn.pixabay.com/download/audio/2022/11/15/audio_cee88270e1.mp3?filename=space-ambient-13183.mp3',
+            rain: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_77d1c1a683.mp3?filename=rain-and-thunder-12551.mp3',
+            lofi: 'https://cdn.pixabay.com/download/audio/2022/12/06/audio_83e9c7a2c9.mp3?filename=lofi-chill-159456.mp3',
+            piano: 'https://cdn.pixabay.com/download/audio/2022/10/13/audio_24489e3b1b.mp3?filename=piano-moment-9835.mp3'
+        };
+        
+        // Sound effects for books
+        this.soundEffects = {
+            click: 'https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3',
+            pageTurn: 'https://assets.mixkit.co/sfx/preview/mixkit-page-turn-swipe-1493.mp3',
+            bookClose: 'https://assets.mixkit.co/sfx/preview/mixkit-book-cover-close-1492.mp3',
+            success: 'https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3'
+        };
+        
+        this.currentTrack = 'classical';
+        this.isPlaying = false;
+        this.volume = 0.3;
+        this.soundEffectsEnabled = true;
+        
+        this.init();
+    }
+    
+    init() {
+        this.loadSettings();
+        this.setupEventListeners();
+        this.loadSoundEffects();
+        this.loadCurrentTrack();
+    }
+    
+    loadSettings() {
+        const savedTrack = localStorage.getItem('bookSite_musicTrack');
+        const savedVolume = localStorage.getItem('bookSite_volume');
+        const savedState = localStorage.getItem('bookSite_musicState');
+        
+        if (savedTrack && this.musicTracks[savedTrack]) {
+            this.currentTrack = savedTrack;
+        }
+        
+        if (savedVolume) {
+            this.volume = parseFloat(savedVolume);
+            this.volumeSlider.value = this.volume;
+        }
+        
+        if (savedState === 'playing') {
+            this.isPlaying = true;
+            setTimeout(() => {
+                this.musicToggle.innerHTML = '🎵';
+                this.musicToggle.classList.add('playing');
+                this.soundWave.classList.add('active');
+            }, 100);
+        }
+    }
+    
+    loadSoundEffects() {
+        Object.keys(this.soundEffects).forEach(sound => {
+            const audio = document.getElementById(`${sound}-sound`);
+            if (audio) {
+                const source = document.createElement('source');
+                source.src = this.soundEffects[sound];
+                source.type = 'audio/mpeg';
+                audio.appendChild(source);
+            }
+        });
+    }
+    
+    setupEventListeners() {
+        // Music toggle
+        this.musicToggle.addEventListener('click', () => this.toggleMusic());
+        
+        // Volume control
+        this.volumeSlider.addEventListener('input', (e) => this.setVolume(e.target.value));
+        
+        // Music selection
+        this.musicSelectBtn.addEventListener('click', () => this.toggleMusicSelection());
+        
+        // Music option clicks
+        document.querySelectorAll('.music-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const track = e.currentTarget.dataset.track;
+                this.changeTrack(track);
+                this.musicSelection.style.display = 'none';
+                this.playSound('click');
+            });
+        });
+        
+        // Close music selection when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!this.musicSelection.contains(e.target) && 
+                !this.musicSelectBtn.contains(e.target) &&
+                this.musicSelection.style.display === 'block') {
+                this.musicSelection.style.display = 'none';
+            }
+        });
+        
+        // Play sound effects for interactions
+        this.setupSoundEffects();
+    }
+    
+    setupSoundEffects() {
+        // Click sounds for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            if (!btn.id.includes('music') && !btn.classList.contains('music-option')) {
+                btn.addEventListener('click', () => {
+                    if (this.soundEffectsEnabled) {
+                        this.playSound('click');
+                    }
+                });
+            }
+        });
+        
+        // Page turn sound for modal open/close
+        const modal = document.getElementById('reviewModal');
+        const modalClose = modal.querySelector('.close');
+        
+        modalClose.addEventListener('click', () => {
+            if (this.soundEffectsEnabled) {
+                this.playSound('bookClose');
+            }
+        });
+        
+        // Search sound
+        const searchBtn = document.getElementById('searchButton');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                if (this.soundEffectsEnabled) {
+                    this.playSound('pageTurn');
+                }
+            });
+        }
+        
+        // Success sounds
+        document.querySelectorAll('.wishlist-btn, .read-later-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (this.soundEffectsEnabled && e.currentTarget.classList.contains('added')) {
+                    setTimeout(() => this.playSound('success'), 300);
+                }
+            });
+        });
+    }
+    
+    playSound(soundName) {
+        try {
+            const sound = document.getElementById(`${soundName}-sound`);
+            if (sound) {
+                sound.volume = this.volume * 0.7;
+                sound.currentTime = 0;
+                sound.play().catch(e => {
+                    // Silent fail for sound effects
+                });
+            }
+        } catch (e) {
+            // Ignore sound errors
+        }
+    }
+    
+    toggleMusic() {
+        if (this.isPlaying) {
+            this.pauseMusic();
+        } else {
+            this.playMusic();
+        }
+        this.playSound('click');
+    }
+    
+    playMusic() {
+        if (!this.bgMusic.src) {
+            this.loadCurrentTrack();
+        }
+        
+        this.bgMusic.play()
+            .then(() => {
+                this.isPlaying = true;
+                this.musicToggle.classList.add('playing');
+                this.soundWave.classList.add('active');
+                this.musicToggle.innerHTML = '🎵';
+                localStorage.setItem('bookSite_musicState', 'playing');
+            })
+            .catch(e => {
+                console.log("Playback prevented");
+                this.musicToggle.innerHTML = '🔇';
+            });
+    }
+    
+    pauseMusic() {
+        this.bgMusic.pause();
+        this.isPlaying = false;
+        this.musicToggle.classList.remove('playing');
+        this.soundWave.classList.remove('active');
+        this.musicToggle.innerHTML = '🔇';
+        localStorage.setItem('bookSite_musicState', 'paused');
+    }
+    
+    setVolume(value) {
+        this.volume = parseFloat(value);
+        this.bgMusic.volume = this.volume;
+        localStorage.setItem('bookSite_volume', this.volume);
+        
+        // Update volume icon
+        if (this.volume === 0) {
+            this.volumeIcon.innerHTML = '🔈';
+        } else if (this.volume < 0.5) {
+            this.volumeIcon.innerHTML = '🔉';
+        } else {
+            this.volumeIcon.innerHTML = '🔊';
+        }
+    }
+    
+    changeTrack(trackName) {
+        if (this.musicTracks[trackName]) {
+            this.currentTrack = trackName;
+            localStorage.setItem('bookSite_musicTrack', trackName);
+            this.loadCurrentTrack();
+            
+            // Update active button
+            document.querySelectorAll('.music-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.track === trackName) {
+                    option.classList.add('active');
+                }
+            });
+            
+            // Play immediately if music was playing
+            if (this.isPlaying) {
+                this.bgMusic.play();
+            }
+        }
+    }
+    
+    loadCurrentTrack() {
+        this.bgMusic.src = this.musicTracks[this.currentTrack];
+        this.bgMusic.volume = this.volume;
+        this.bgMusic.load();
+        
+        // Set active music option
+        document.querySelectorAll('.music-option').forEach(option => {
+            option.classList.remove('active');
+            if (option.dataset.track === this.currentTrack) {
+                option.classList.add('active');
+            }
+        });
+    }
+    
+    toggleMusicSelection() {
+        this.musicSelection.style.display = 
+            this.musicSelection.style.display === 'block' ? 'none' : 'block';
+        this.playSound('click');
+    }
+    
+    playThemeForGenre(genre) {
+        const genreThemes = {
+            'Classic': 'classical',
+            'Fiction': 'piano',
+            'Mystery': 'rain',
+            'Romance': 'jazz',
+            'Fantasy': 'ambient',
+            'Contemporary': 'lofi',
+            'Literary': 'classical',
+            'Young Adult': 'lofi',
+            'Drama': 'piano',
+            'Adventure': 'ambient'
+        };
+        
+        const theme = genreThemes[genre] || 'classical';
+        if (theme !== this.currentTrack) {
+            this.changeTrack(theme);
+            if (!this.isPlaying) {
+                this.playMusic();
+            }
+        }
+    }
+}
+
+// ==================== MAIN BOOK SYSTEM ====================
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize multimedia manager
+    window.multimediaManager = new MultimediaManager();
+    
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    const bookContainer = document.getElementById('bookContainer');
+    const bookCards = document.querySelectorAll('.card');
+    const noResults = document.getElementById('noResults');
+    
+    // Filter elements
+    const genreFilter = document.getElementById('genreFilter');
+    const yearFilter = document.getElementById('yearFilter');
+    const ratingFilter = document.getElementById('ratingFilter');
+    
+    // Stats elements
+    const showStatsBtn = document.getElementById('showStats');
+    const statsPanel = document.getElementById('statsPanel');
+    const booksReadEl = document.getElementById('booksRead');
+    const avgRatingEl = document.getElementById('avgRating');
+    const wishlistCountEl = document.getElementById('wishlistCount');
+    const reviewsCountEl = document.getElementById('reviewsCount');
+    
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    
+    // Initialize
+    initializeSearch();
+    initializeFilters();
+    initializeStats();
+    initializeTheme();
+    loadUserData();
+    
+    // ==================== SEARCH SYSTEM ====================
+    function initializeSearch() {
+        // Real-time search on input
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            updateSuggestions(searchTerm);
+            
+            if (searchTerm === '') {
+                resetSearch();
+                hideSuggestions();
+            } else {
+                performSearch(searchTerm);
+            }
+        });
+        
+        // Search button click
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm) {
+                performSearch(searchTerm);
+                // Scroll to first result
+                const visibleCards = document.querySelectorAll('.card:not(.hidden)');
+                if (visibleCards.length > 0) {
+                    scrollToCard(visibleCards[0]);
+                }
+            }
+            hideSuggestions();
+        });
+        
+        // Enter key support
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (searchTerm) {
+                    performSearch(searchTerm);
+                    // Scroll to first result
+                    const visibleCards = document.querySelectorAll('.card:not(.hidden)');
+                    if (visibleCards.length > 0) {
+                        scrollToCard(visibleCards[0]);
+                    }
+                }
+                hideSuggestions();
+            }
+        });
+        
+        // Focus/blur for suggestions
+        searchInput.addEventListener('focus', function() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm) {
+                updateSuggestions(searchTerm);
+            }
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            setTimeout(() => hideSuggestions(), 200);
+        });
+    }
+    
+    function performSearch(searchTerm) {
+        let hasResults = false;
+        
+        bookCards.forEach(card => {
+            const title = card.getAttribute('data-title').toLowerCase();
+            const author = card.getAttribute('data-author').toLowerCase();
+            const genre = card.getAttribute('data-genre').toLowerCase();
+            const rating = card.getAttribute('data-rating');
+            const year = card.getAttribute('data-year');
+            
+            // Search in all fields
+            if (title.includes(searchTerm) || 
+                author.includes(searchTerm) || 
+                genre.includes(searchTerm) ||
+                rating.includes(searchTerm) ||
+                year.includes(searchTerm)) {
+                card.classList.remove('hidden');
+                hasResults = true;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+        
+        // Show/hide no results message
+        noResults.style.display = hasResults ? 'none' : 'block';
+        
+        // Hide suggestions after search
+        hideSuggestions();
+    }
+    
+    function resetSearch() {
+        bookCards.forEach(card => {
+            card.classList.remove('hidden');
+            card.classList.remove('highlight');
+        });
+        noResults.style.display = 'none';
+    }
+    
+    function updateSuggestions(searchTerm) {
+        if (!searchTerm) {
+            hideSuggestions();
+            return;
+        }
+        
+        const suggestions = [];
+        bookCards.forEach(card => {
+            const title = card.getAttribute('data-title');
+            const author = card.getAttribute('data-author');
+            const genre = card.getAttribute('data-genre');
+            
+            if (title.toLowerCase().includes(searchTerm) || 
+                author.toLowerCase().includes(searchTerm) ||
+                genre.toLowerCase().includes(searchTerm)) {
+                suggestions.push({
+                    title: title,
+                    author: author,
+                    genre: genre,
+                    element: card
+                });
+            }
+        });
+        
+        if (suggestions.length > 0) {
+            showSuggestions(suggestions);
+        } else {
+            hideSuggestions();
+        }
+    }
+    
+    function showSuggestions(suggestions) {
+        searchSuggestions.innerHTML = '';
+        suggestions.forEach(suggestion => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `
+                <span class="book-icon">📚</span>
+                <div>
+                    <strong>${suggestion.title}</strong><br>
+                    <small>By ${suggestion.author} • ${suggestion.genre}</small>
+                </div>
+            `;
+            
+            div.addEventListener('click', function() {
+                searchInput.value = suggestion.title;
+                performSearch(suggestion.title);
+                scrollToCard(suggestion.element);
+                hideSuggestions();
+                if (window.multimediaManager) {
+                    window.multimediaManager.playSound('click');
+                }
+            });
+            
+            searchSuggestions.appendChild(div);
+        });
+        
+        searchSuggestions.style.display = 'block';
+    }
+    
+    function hideSuggestions() {
+        searchSuggestions.style.display = 'none';
+    }
+    
+    function scrollToCard(card) {
+        // Remove highlight from all cards
+        bookCards.forEach(c => c.classList.remove('highlight'));
+        
+        // Add highlight to target card
+        card.classList.add('highlight');
+        
+        // Scroll to card
+        const cardRect = card.getBoundingClientRect();
+        const absoluteCardTop = window.pageYOffset + cardRect.top;
+        const middle = absoluteCardTop - (window.innerHeight / 2) + (cardRect.height / 2);
+        
+        window.scrollTo({
+            top: middle,
+            behavior: 'smooth'
+        });
+        
+        // Remove highlight after animation
+        setTimeout(() => {
+            card.classList.remove('highlight');
+        }, 2000);
+    }
+    
+    // ==================== FILTER SYSTEM ====================
+    function initializeFilters() {
+        genreFilter.addEventListener('change', applyFilters);
+        yearFilter.addEventListener('change', applyFilters);
+        ratingFilter.addEventListener('change', applyFilters);
+    }
+    
+    function applyFilters() {
+        const selectedGenre = genreFilter.value;
+        const selectedYear = yearFilter.value;
+        const selectedRating = ratingFilter.value;
+        
+        bookCards.forEach(card => {
+            const genre = card.getAttribute('data-genre');
+            const year = card.getAttribute('data-year');
+            const rating = parseInt(card.getAttribute('data-rating') || 0);
+            
+            let show = true;
+            
+            // Genre filter
+            if (selectedGenre && !genre.includes(selectedGenre)) {
+                show = false;
+            }
+            
+            // Year filter
+            if (selectedYear) {
+                if (selectedYear.includes('-')) {
+                    // Range filter
+                    const [start, end] = selectedYear.split('-').map(Number);
+                    if (year < start || year > end) {
+                        show = false;
+                    }
+                } else if (selectedYear === 'Before 1990') {
+                    if (year >= 1990) {
+                        show = false;
+                    }
+                }
+            }
+            
+            // Rating filter
+            if (selectedRating && rating < parseInt(selectedRating)) {
+                show = false;
+            }
+            
+            if (show) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+        
+        // Show/hide no results
+        const visibleCards = document.querySelectorAll('.card:not(.hidden)');
+        noResults.style.display = visibleCards.length > 0 ? 'none' : 'block';
+    }
+    
+    // ==================== STATS SYSTEM ====================
+    function initializeStats() {
+        showStatsBtn.addEventListener('click', () => {
+            statsPanel.style.display = statsPanel.style.display === 'block' ? 'none' : 'block';
+            updateStats();
+            if (window.multimediaManager) {
+                window.multimediaManager.playSound('click');
+            }
+        });
+    }
+    
+    function updateStats() {
+        const ratings = JSON.parse(localStorage.getItem('bookRatings') || '{}');
+        const wishlist = JSON.parse(localStorage.getItem('bookWishlist') || '{}');
+        const readLater = JSON.parse(localStorage.getItem('bookReadLater') || '{}');
+        const reviews = JSON.parse(localStorage.getItem('bookReviews') || '[]');
+        
+        // Books rated
+        const ratedBooks = Object.keys(ratings).length;
+        booksReadEl.textContent = ratedBooks;
+        
+        // Average rating
+        let totalRating = 0;
+        Object.values(ratings).forEach(rating => {
+            totalRating += parseInt(rating);
+        });
+        const avgRating = ratedBooks > 0 ? (totalRating / ratedBooks).toFixed(1) : '0.0';
+        avgRatingEl.textContent = avgRating;
+        
+        // Wishlist count
+        const wishlistCount = Object.values(wishlist).filter(v => v).length;
+        wishlistCountEl.textContent = wishlistCount;
+        
+        // Reviews count
+        reviewsCountEl.textContent = reviews.length;
+    }
+    
+    // ==================== THEME SYSTEM ====================
+    function initializeTheme() {
+        // Check for saved theme
+        const savedTheme = localStorage.getItem('bookSite_theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('bookSite_theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                localStorage.setItem('bookSite_theme', 'light');
+                themeToggle.textContent = '🌙';
+            }
+            if (window.multimediaManager) {
+                window.multimediaManager.playSound('click');
+            }
+        });
+    }
+    
+    // ==================== USER DATA SYSTEM ====================
+    function loadUserData() {
+        // Load ratings
+        const ratings = JSON.parse(localStorage.getItem('bookRatings') || '{}');
+        Object.entries(ratings).forEach(([bookId, rating]) => {
+            const card = document.getElementById(bookId);
+            if (card) {
+                card.setAttribute('data-rating', rating);
+                // Update the rating display
+                const ratingP = card.querySelector('p:nth-of-type(1)');
+                if (ratingP) {
+                    ratingP.textContent = `Rating: ${'⭐'.repeat(rating)}${'☆'.repeat(5-rating)}`;
+                }
+            }
+        });
+        
+        // Update Read Later buttons
+        const readLater = JSON.parse(localStorage.getItem('bookReadLater') || '{}');
+        updateReadLaterButtons(readLater);
+        
+        // Update stats
+        updateStats();
+    }
+    
+    // ==================== REVIEW SYSTEM ====================
+    const reviews = {
+        suns: {
+            title: "A Thousand Splendid Suns",
+            text: "A Thousand Splendid Suns by Khaled Hosseini is a deeply moving and emotional novel that explores friendship, love, and resilience in the face of hardship. Set in Afghanistan, the story follows the lives of two women, Mariam and Laila, whose paths cross under tragic circumstances and whose bond becomes a source of strength and hope.The novel powerfully portrays the struggles faced by women in a war-torn society, highlighting themes of sacrifice, endurance, and courage. Hosseini's writing is simple yet poetic, making the characters feel incredibly real and relatable. The emotional depth of the story leaves a lasting impact on the reader.",
+            image: "A thousand splendid suns.jpg"
+        },
+        hp: {
+            title: "Harry Potter and the Goblet of Fire",
+            text: "Harry Potter and the Goblet of Fire by J.K. Rowling marks a turning point in the Harry Potter series, introducing a darker and more intense tone. The story follows Harry as he unexpectedly becomes a competitor in the dangerous Triwizard Tournament, a challenge meant only for older and more experienced wizards.This book expands the magical world in exciting ways, introducing new schools, complex challenges, and unforgettable moments. The themes of bravery, loyalty, and the cost of growing up are explored as Harry faces risks far greater than before. The plot builds steadily toward a dramatic and shocking conclusion that changes the direction of the series.",
+            image: "Harry Potter (Book Cover - Goblet of Fire) MightyPrint™ Wall Art MP17240255.jpg"
+        },
+        orient: {
+            title: "Murder on the Orient Express",
+            text: "Murder on the Orient Express by Agatha Christie is a classic detective novel featuring the brilliant Belgian detective Hercule Poirot. Set aboard the luxurious Orient Express train, the story unfolds when a wealthy American passenger is found murdered during the journey.The novel is a masterclass in suspense and mystery. Christie expertly weaves red herrings, unexpected twists, and clever deductions that keep readers guessing until the very end. Poirot's meticulous investigation and sharp intellect make the resolution both satisfying and unforgettable.With its compact setting, well-drawn characters, and ingenious plot, Murder on the Orient Express is a must-read for mystery lovers and anyone who enjoys a cleverly crafted whodunit. It remains one of Agatha Christie's most celebrated works.",
+            image: "Agatha Christie Murder on the Orient Express.jpg"
+        },
+        kafka: {
+            title: "The Metamorphosis",
+            text: "The Metamorphosis by Franz Kafka is a haunting and surreal novella that explores themes of alienation, identity, and the human condition. The story follows Gregor Samsa, a man who wakes up one morning to find himself transformed into a giant insect, and the impact this transformation has on his life and family.Kafka's writing is stark, introspective, and unsettling, capturing the sense of isolation and helplessness that Gregor experiences. The story serves as a powerful allegory for societal pressures, family obligations, and the fragility of human existence.Despite its brevity, The Metamorphosis leaves a lasting impression, challenging readers to reflect on identity, empathy, and the nature of human relationships. It is a profound and thought-provoking work of modern literature.",
+            image: "The Metamorphosis And Other Writings _ Franz Kafka _ Englisch _ Buch _ Gebunden.jpg"
+        },
+        pride: {
+            title: "Pride and Prejudice",
+            text: "Pride and Prejudice by Jane Austen is a timeless classic that explores themes of love, social class, and personal growth. The story follows Elizabeth Bennet, a sharp-witted and independent young woman, as she navigates societal expectations and her evolving feelings for the enigmatic Mr. Darcy.Austen's writing is witty, elegant, and full of social commentary, capturing the manners and intricacies of 19th-century England. The characters are richly drawn, and their interactions bring humor, drama, and romance to life.Overall, Pride and Prejudice is a charming and insightful novel about understanding, respect, and the power of first impressions. It continues to captivate readers across generations.",
+            image: "pride and Prejudice by jane austen – Download for free instant acess.jpg"
+        },
+        norwegian: {
+            title: "Norwegian Wood",
+            text: "Norwegian Wood by Haruki Murakami is a deeply introspective and melancholic novel that explores love, loss, and the complexities of human emotion. The story follows Toru Watanabe, a college student in Tokyo, as he navigates relationships and copes with the tragic deaths of those close to him.Murakami's writing is evocative and lyrical, capturing the quiet sadness and beauty of everyday life. The characters are richly developed, and the novel's contemplative tone draws readers into their inner struggles and emotional journeys.Overall, Norwegian Wood is a poignant and thought-provoking novel that lingers in the mind long after reading. It is a profound exploration of love, grief, and self-discovery.",
+            image: "Norwegian Wood _ Haruki Murakami.jpg"
+        },
+        morisaki: {
+            title: "More Days at the Morisaki Bookshop",
+            text: "More Days at the Morisaki Bookshop by Satoshi Yagisawa is a heartwarming and cozy novel about the joys of books, human connections, and healing through everyday life. The story follows the experiences of the bookstore's staff and visitors, each bringing their own stories, challenges, and little moments of happiness.Yagisawa's writing is gentle, comforting, and full of warmth, creating a welcoming atmosphere that makes the reader feel part of the bookstore community. The characters are relatable and endearing, and the narrative celebrates small but meaningful moments of life.Overall, More Days at the Morisaki Bookshop is a charming and uplifting read, perfect for anyone who loves books, kindness, and stories that touch the heart.",
+            image: "More Days at the Morisaki Bookshop_ A Novel.jpg"
+        },
+        fault: {
+            title: "The Fault in Our Stars",
+            text: "The Fault in Our Stars by John Green is a moving and heartfelt novel that explores love, life, and loss through the eyes of two teenagers, Hazel and Augustus, who meet at a cancer support group. Their story is both tender and heartbreaking, filled with humor, hope, and the bittersweet reality of facing mortality.Green's writing is poignant and accessible, capturing the emotions of young love while addressing deeper questions about life, fate, and what it means to leave a mark on the world. The characters are vivid, relatable, and unforgettable, making their journey both touching and inspiring.Overall, The Fault in Our Stars is an emotional, thought-provoking, and unforgettable read that resonates with readers of all ages.",
+            image: "The Fault in Our Stars.jpg"
+        }
+    };
+    
+    // Global variables
+    window.currentBook = '';
+    let wishlist = JSON.parse(localStorage.getItem('bookWishlist') || '{}');
+    let readLater = JSON.parse(localStorage.getItem('bookReadLater') || '{}');
+    let bookRatings = JSON.parse(localStorage.getItem('bookRatings') || '{}');
+    let bookReviews = JSON.parse(localStorage.getItem('bookReviews') || '[]');
+    
+    // Fix: Make openReview globally accessible
+    window.openReview = function(book) {
+        window.currentBook = book;
+        const modal = document.getElementById("reviewModal");
+        const content = modal.querySelector(".modal-content");
+    
+        document.getElementById("reviewTitle").innerText = reviews[book].title;
+        document.getElementById("reviewText").innerText = reviews[book].text;
+        content.style.backgroundImage = `url('${reviews[book].image}')`;
+    
+        // Reset rating stars
+        const stars = document.querySelectorAll(".star");
+        stars.forEach(s => s.classList.remove("selected"));
+        
+        // Load saved rating if exists
+        if (bookRatings[book]) {
+            for (let i = 0; i < bookRatings[book]; i++) {
+                stars[i].classList.add("selected");
+            }
+        }
+    
+        // Update wishlist button
+        const wishlistBtn = document.getElementById("wishlistBtn");
+        wishlistBtn.textContent = wishlist[book] ? "❤️ Remove from Wishlist" : "❤️ Add to Wishlist";
+        wishlistBtn.classList.toggle("added", wishlist[book]);
+        
+        // Update Read Later button in modal
+        const modalReadLaterBtn = document.getElementById("modalReadLaterBtn");
+        modalReadLaterBtn.textContent = readLater[book] ? "⏳ Remove from Read Later" : "⏳ Add to Read Later";
+        modalReadLaterBtn.classList.toggle("added", readLater[book]);
+    
+        modal.style.display = "block";
+        
+        // Play page turn sound
+        if (window.multimediaManager) {
+            window.multimediaManager.playSound('pageTurn');
+            
+            // Play appropriate music for the book genre
+            const card = document.getElementById(book);
+            const genre = card.getAttribute('data-genre').split(' ')[0];
+            window.multimediaManager.playThemeForGenre(genre);
+        }
+        
+        // Track review view
+        if (!bookReviews.includes(book)) {
+            bookReviews.push(book);
+            localStorage.setItem('bookReviews', JSON.stringify(bookReviews));
+            updateStats();
+        }
+    }
+    
+    window.closeReview = function() {
+        document.getElementById("reviewModal").style.display = "none";
+        if (window.multimediaManager) {
+            window.multimediaManager.playSound('bookClose');
+        }
+    }
+    
+    // STAR RATING
+    window.rateBook = function(stars) {
+        document.querySelectorAll(".star").forEach((s,i) => {
+            if(i < stars) s.classList.add("selected");
+            else s.classList.remove("selected");
+        });
+        
+        // Save rating
+        bookRatings[window.currentBook] = stars;
+        localStorage.setItem('bookRatings', JSON.stringify(bookRatings));
+        
+        // Update card rating display
+        const card = document.getElementById(window.currentBook);
+        const ratingP = card.querySelector('p:nth-of-type(1)');
+        if (ratingP) {
+            ratingP.textContent = `Rating: ${'⭐'.repeat(stars)}${'☆'.repeat(5-stars)}`;
+        }
+        
+        showNotification(`⭐ Rated "${reviews[window.currentBook].title}" ${stars} stars!`);
+        updateStats();
+    }
+    
+    // WISHLIST
+    window.toggleWishlist = function() {
+        const btn = document.getElementById("wishlistBtn");
+        if(wishlist[window.currentBook]) {
+            delete wishlist[window.currentBook];
+            btn.textContent = "❤️ Add to Wishlist";
+            btn.classList.remove("added");
+            showNotification('❌ Removed from Wishlist');
+        } else {
+            wishlist[window.currentBook] = true;
+            btn.textContent = "❤️ Remove from Wishlist";
+            btn.classList.add("added");
+            showNotification('❤️ Added to Wishlist');
+        }
+        
+        localStorage.setItem('bookWishlist', JSON.stringify(wishlist));
+        updateStats();
+    }
+    
+    // READ LATER FUNCTION
+    window.toggleReadLater = function(bookId) {
+        // Update read later status
+        if (readLater[bookId]) {
+            delete readLater[bookId];
+            showNotification(`📚 Removed "${reviews[bookId].title}" from Read Later`);
+        } else {
+            readLater[bookId] = true;
+            showNotification(`⏳ Added "${reviews[bookId].title}" to Read Later`);
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('bookReadLater', JSON.stringify(readLater));
+        
+        // Update button states
+        updateReadLaterButtons(readLater);
+        
+        // Update modal button if this book is currently open
+        if (window.currentBook === bookId) {
+            const modalReadLaterBtn = document.getElementById("modalReadLaterBtn");
+            modalReadLaterBtn.textContent = readLater[bookId] ? "⏳ Remove from Read Later" : "⏳ Add to Read Later";
+            modalReadLaterBtn.classList.toggle("added", readLater[bookId]);
+        }
+    }
+    
+    function updateReadLaterButtons(readLaterData) {
+        // Update all Read Later buttons
+        document.querySelectorAll('.read-later-btn').forEach(btn => {
+            const bookId = btn.onclick.toString().match(/toggleReadLater\('(\w+)'\)/);
+            if (bookId && bookId[1]) {
+                const id = bookId[1];
+                if (readLaterData[id]) {
+                    btn.textContent = "✓ In Read Later";
+                    btn.classList.add("added");
+                } else {
+                    btn.textContent = "⏳ Read Later";
+                    btn.classList.remove("added");
+                }
+            }
+        });
+    }
+    
+    // Notification system
+    function showNotification(message) {
+        // Remove existing notification
+        const existing = document.querySelector('.notification');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Play success sound
+        if (window.multimediaManager && message.includes("Added")) {
+            window.multimediaManager.playSound('success');
+        }
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 3000);
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Music controls
+        if (e.key === 'm' || e.key === 'M') {
+            e.preventDefault();
+            if (window.multimediaManager) {
+                window.multimediaManager.toggleMusic();
+            }
+        }
+        
+        // Volume controls
+        if (e.key === '[') {
+            e.preventDefault();
+            const slider = document.getElementById('volume-slider');
+            if (slider) {
+                slider.value = Math.max(0, parseFloat(slider.value) - 0.1);
+                slider.dispatchEvent(new Event('input'));
+            }
+        }
+        if (e.key === ']') {
+            e.preventDefault();
+            const slider = document.getElementById('volume-slider');
+            if (slider) {
+                slider.value = Math.min(1, parseFloat(slider.value) + 0.1);
+                slider.dispatchEvent(new Event('input'));
+            }
+        }
+        
+        // Escape to close modals
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('reviewModal');
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+            
+            const musicModal = document.getElementById('musicSelection');
+            if (musicModal.style.display === 'block') {
+                musicModal.style.display = 'none';
+            }
+            
+            if (statsPanel.style.display === 'block') {
+                statsPanel.style.display = 'none';
+            }
+        }
+        
+        // Search shortcut (Ctrl+F or /)
+        if ((e.ctrlKey && e.key === 'f') || e.key === '/') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
+    
+    // Check if redirected from search
+    window.onload = function() {
+        const scrollToId = localStorage.getItem("scrollToBook");
+        if(scrollToId) {
+            const el = document.getElementById(scrollToId);
+            if(el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                el.classList.add('highlight');
+                setTimeout(() => el.classList.remove('highlight'), 2000);
+            }
+            localStorage.removeItem("scrollToBook");
+        }
+    }
+});
+</script>
+</body>
+</html>
